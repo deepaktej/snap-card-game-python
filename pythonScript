@@ -1,0 +1,71 @@
+import random
+
+# Define the Card class
+class Card:
+    def __init__(self, suit, value):
+        self.suit = suit
+        self.value = value
+
+# Initialize deck with N packs of cards
+def initialize_deck(N):
+    suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
+    values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King', 'Ace']
+    deck = []
+    for _ in range(N):
+        for suit in suits:
+            for value in values:
+                deck.append(Card(suit, value))
+    return deck
+
+# Shuffle the deck using Fisher-Yates algorithm
+def shuffle_deck(deck):
+    random.shuffle(deck)
+
+# Function to compare two cards for snap conditions
+def is_snap(card1, card2, snap_condition):
+    if snap_condition == 'face_value':
+        return card1.value == card2.value
+    elif snap_condition == 'suit':
+        return card1.suit == card2.suit
+    elif snap_condition == 'both':
+        return card1.value == card2.value and card1.suit == card2.suit
+    else:
+        raise ValueError("Invalid snap_condition")
+
+# Main game simulation function
+def play_snap_game(N, snap_condition):
+    deck = initialize_deck(N)
+    shuffle_deck(deck)
+    
+    player1_cards = []
+    player2_cards = []
+    common_pile = []
+    
+    for i in range(len(deck)-1):
+        common_pile.append(deck[i])
+        if is_snap(deck[i], deck[i+1], snap_condition):
+            snap_winner = random.choice([1, 2])  # Randomly choose player 1 or 2
+            if snap_winner == 1:
+                player1_cards.extend(common_pile)
+            else:
+                player2_cards.extend(common_pile)
+            common_pile = []
+    
+    # Tally up the total number of cards each player has accumulated
+    player1_total = len(player1_cards)
+    player2_total = len(player2_cards)
+    
+    # Determine the winner or if it's a draw
+    if player1_total > player2_total:
+        print("Player 1 wins with", player1_total, "cards!")
+    elif player2_total > player1_total:
+        print("Player 2 wins with", player2_total, "cards!")
+    else:
+        print("It's a draw! Both players have", player1_total, "cards.")
+
+# Example usage:
+if __name__ == "__main__":
+    N = int(input("Enter the number of packs to use: "))
+    snap_condition = input("Choose snap condition ('face_value', 'suit', or 'both'): ")
+    
+    play_snap_game(N, snap_condition)
